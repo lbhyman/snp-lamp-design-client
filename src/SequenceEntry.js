@@ -3,8 +3,8 @@ import NodeFetch from 'node-fetch';
 
 const SequenceEntry = () => {
 
-    const [WT, setWT] = useState();
-    const [SNP, setSNP] = useState();
+    const [WT, setWT] = useState(); // eslint-disable-line no-unused-vars
+    const [SNP, setSNP] = useState(); // eslint-disable-line no-unused-vars
 
     const sendUpdate = (data) => {
         NodeFetch('http://127.0.0.1:5000/send_input', 

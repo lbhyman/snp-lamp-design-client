@@ -83,7 +83,7 @@ const Output = () => {
         return () => {
           clearInterval(interval);
         };
-      }, []);
+      }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (running) {
         return (
