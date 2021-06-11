@@ -1,24 +1,64 @@
+
 import { useState } from 'react';
+import { useBetween } from 'use-between';
 import NodeFetch from 'node-fetch';
 
+export const shareableRunningState = () => {
+    const [running, setRunning] = useState(false);
+    return {
+        running,
+        setRunning
+    }
+}
+
+export const shareableFinishedState = () => {
+    const [finished, setFinished] = useState(false);
+    return {
+        finished,
+        setFinished
+    }
+}
+
+export const shareableGAProgressState = () => {
+    const [GAProgress, setGAProgress] = useState(0);
+    return {
+        GAProgress,
+        setGAProgress
+    }    
+}
+
+export const shareableOutputState = () => {
+    const [output, setOutput] = useState();
+    return {
+        output,
+        setOutput
+    }    
+}
+
 class Optimizer {
+
     constructor(probeParams, popSize) {
         this.probeParams = probeParams;
         this.popSize = popSize;
         this.probePopulation = [];
         this.finalProbe = null;
-        this.running = false; // TODO: use state hook
-        this.GAProgress = 0; // TODO: use state hook
-        this.endPointAddress = 'http://127.0.0.1:5000' // TODO: Use environment variable
+        this.running = useBetween(shareableRunningState);
+        this.finished = useBetween(shareableFinishedState);
+        this.GAProgress = useBetween(shareableGAProgressState);
+        this.output = useBetween(shareableOutputState);
+        this.endPointAddress = 'http://127.0.0.1:5000'; // TODO: Use environment variable
+        this.reset();
     }
 
-    reset() {
+    reset = () => {
         this.probePopulation = [];
-        this.running = false;
-        this.GAProgress = 0;
-    }
+        setRunning(false);
+        setFinished(false);
+        setGAProgress(0);
+        setOutput(null);
+    };
 
-    generateInitialGAPopulation() {
+    generateInitialGAPopulation = () => {
         var endPoint = this.endPointAddress.concat('/generate_initial_population');
         var params = {
             popSize: this.popSize,
@@ -34,9 +74,9 @@ class Optimizer {
         }).then(function (json) {
             this.probePopulation = JSON.parse(json);
         })
-    }
+    };
 
-    generateNextGAPopulation() {
+    generateNextGAPopulation = () => {
         var endPoint = this.endPointAddress.concat('/generate_next_population');
         NodeFetch(endPoint,
         {
@@ -48,9 +88,9 @@ class Optimizer {
         }).then(function (json) {
             this.probePopulation = JSON.parse(json);
         })
-    }
+    };
 
-    generateNextHillClimbingSteps() {
+    generateNextHillClimbingSteps = () => {
         var endPoint = this.endPointAddress.concat('/hill_climbing_options');
         NodeFetch(endPoint,
         {
@@ -62,9 +102,9 @@ class Optimizer {
         }).then(function (json) {
             this.probePopulation = JSON.parse(json);
         })
-    }
+    };
 
-    calculateProbeFitness(probe) {
+    calculateProbeFitness = (probe) => {
         var endPoint = this.endPointAddress.concat('/calculate_fitness');
         NodeFetch(endPoint,
         {
@@ -74,21 +114,23 @@ class Optimizer {
         }).then(function (response) {
             return JSON.parse(response.json());
         })
-    }
+    };
 
-    calculatePopulationFitness() {
+    calculatePopulationFitness = () => {
         for (var i=0; i<this.probePopulation.length; i++) {
             if(!this.running) {
                 this.reset();
                 return null;
             }
             var currProbe = this.probePopulation[i];
-            this.probePopulation[i] = this.calculateProbeFitness(currProbe);
-            this.GAProgress ++;
+            if (currProbe.beta[0] != 0) {
+                this.probePopulation[i] = this.calculateProbeFitness(currProbe);
+            }
+            setGAProgress(this.GAProgress + 1);
         }    
-    }
+    };
 
-    getBestProbe() {
+    getBestProbe = () => {
         var bestProbe = this.probePopulation[0];
         for (var i=0; i<this.probePopulation.length; i++) {
             var currProbe = this.probePopulation[i];
@@ -97,9 +139,9 @@ class Optimizer {
             }
         }
         return bestProbe;
-    }
+    };
 
-    runGA() {
+    runGA = () => {
         this.generateInitialGAPopulation();
         this.calculatePopulationFitness();
         while (this.probePopulation.length > 1) {
@@ -107,9 +149,9 @@ class Optimizer {
             this.calculatePopulationFitness();
         }
         this.calculatePopulationFitness();
-    }
+    };
 
-    runHillClimbing() {
+    runHillClimbing = () => {
         var bestProbe = this.getBestProbe();
         this.generateNextHillClimbingSteps();
         this.calculatePopulationFitness();
@@ -121,10 +163,19 @@ class Optimizer {
             var newProbe = this.getBestProbe();
         }
         this.finalProbe = bestProbe;
-    }
+    };
 
-    run() {
+    run = () => {
+        setRunning(true);
+        setFinished(false);
         this.runGA();
         this.runHillClimbing();
-    }
+        if (this.probePopulation.length > 0) {
+            setFinished(true);
+            setOutput(this.finalProbe);
+        }
+        setRunning(false);
+    };
 }
+
+export default Optimizer;

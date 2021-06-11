@@ -1,6 +1,14 @@
 import Slider from '@material-ui/core/Slider';
 import { useState } from 'react';
-import NodeFetch from 'node-fetch';
+import { useBetween } from 'use-between';
+
+export const shareablePopSizeState = () => {
+    const [popSize, setPopSize] = useState();
+    return {
+        popSize,
+        setPopSize
+    }
+}
 
 function valuetext(value) {
     return `${2 ** value}`;
@@ -11,34 +19,18 @@ const PopSlider = () => {
     const sliderMax = 4096;
     var sliderStart = 128;
     var sliderValue = sliderStart;
-    const [value, setValue] = useState(Math.log2(sliderValue));
-
-    const sendUpdate = () => {
-        var data = {'pop_size': value};
-
-        NodeFetch('http://127.0.0.1:5000/send_input', 
-		{headers: {'Content-Type': 'application/json'},
-		method: 'POST',
-		body: JSON.stringify(data)
-        }).then(function (response) {
-            return response.text();
-        })
-    }
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-        sendUpdate();
-    };
+    var popSize = useBetween(shareablePopSizeState);
+    setPopSize(Math.log2(sliderValue));
 
     return (
         <div className="popslider">
-            <label for="population slider" className="sliderlabel">Starting Population: {2 ** value}</label>
+            <label for="population slider" className="sliderlabel">Starting Population: {2 ** popSize}</label>
             <Slider
                 defaultValue={Math.log2(sliderValue)}
                 getAriaValueText={valuetext}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
-                onChange={handleChange}
+                onChange={i => setPopSize(i.target.value)}
                 step={1}
                 marks
                 scale={(x) => 2 ** x}

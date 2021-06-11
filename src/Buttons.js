@@ -1,78 +1,41 @@
+import { shareableRunningState } from './Optimizer.js';
+import { shareableTemperatureState, shareableSodiumState, shareableMagnesiumState } from './ConditionEntry.js';
+import { shareablePopSizeState } from './PopSlider.js';
+import { shareableWTState, shareableSNPState } from './SequenceEntry.js';
+import Optimizer from './Optimizer.js';
 import Button from '@material-ui/core/Button';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import NodeFetch from 'node-fetch';
-
+import { useBetween } from 'use-between';
 
 const Buttons = () => {
 
-    const [running, setRunning] = useState(false);
+    var running = useBetween(shareableRunningState);
+    var temperature = useBetween(shareableTemperatureState);
+    var sodium = useBetween(shareableSodiumState);
+    var magnesium = useBetween(shareableMagnesiumState);
+    var popSize = useBetween(shareablePopSizeState);
+    var WT_seq = useBetween(shareableWTState);
+    var SNP_seq = useBetween(shareableSNPState);
+    var optimizer;
+    var probe_params = {
+        WT:WT_seq,
+        SNP:SNP_seq,
+        minlength:6,
+        mut_rate:0.5,
+        concentrations:{non_mut_target:1e-7, mut_target:1e-7, probeF:1e-7, probeQ:1e-7, sink:1e-7, sinkC:1e-7},
+        params:{temperature:parseFloat(temperature), sodium:parseFloat(sodium)/1000.0, magnesium:parseFloat(magnesium)/1000.0},
+        beta:[0,0,0,0],
+        truncations:[]
+    };
 
-    const getProgress = () => {
-        NodeFetch('http://127.0.0.1:5000/get_progress',
-            {
-                headers: { 'Content-Type': 'application/json' },
-                method: 'POST',
-                body: ''
-            }).then(function (response) {
-                return response.json();
-            }).then(function (json) {
-                setRunning(json.running);
-            })
-    }
-
-    const getOutput = () => {
-        NodeFetch('http://127.0.0.1:5000/get_output',
-            {
-                headers: { 'Content-Type': 'application/json' },
-                method: 'POST',
-                body: ''
-            }).then(function (response) {
-                return response.json();
-            }).then(function (json) {
-                if(running && json.finished) {
-                    setRunning(false);
-                }
-            })
-    }
-
-    const sendStart = () => {
-        NodeFetch('http://127.0.0.1:5000/start_optimizer', 
-		{headers: {'Content-Type': 'application/json'},
-		method: 'POST'
-        }).then(function (response) {
-            return response.text();
-        })
-    }
-
-    const sendStop = () => {
-        NodeFetch('http://127.0.0.1:5000/stop_optimizer', 
-		{headers: {'Content-Type': 'application/json'},
-		method: 'POST'
-        }).then(function (response) {
-            return response.text();
-        })
-    }
-
-    const handleStart = () => {
+    const handleStart = (event, newValue) => {
+        optimizer = Optimizer(probe_params, popSize);
         setRunning(true);
-        sendStart();
-    }
-
-    const handleStop = () => {
+        optimizer.run();
+    };
+    const handleStop = (event, newValue) => {
         setRunning(false);
-        sendStop();
-    }
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            getProgress();
-            getOutput();
-        }, 1000);
-        return () => {
-          clearInterval(interval);
-        };
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        optimizer.reset();
+    };
 
     return (
         <div className="startstopbuttons">

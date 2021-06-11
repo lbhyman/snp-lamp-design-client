@@ -1,36 +1,44 @@
 import { useState } from 'react';
-import NodeFetch from 'node-fetch';
+import { useBetween } from 'use-between';
+
+export const shareableTemperatureState = () => {
+    const [temperature, setTemperature] = useState('21');
+    return {
+        temperature,
+        setTemperature
+    }
+}
+
+export const shareableSodiumState = () => {
+    const [sodium, setSodium] = useState('65');
+    return {
+        sodium,
+        setSodium
+    }
+}
+
+export const shareableMagnesiumState = () => {
+    const [magnesium, setMagnesium] = useState('8');
+    return {
+        magnesium,
+        setMagnesium
+    }
+}
 
 const ConditionEntry = () => {
 
-    const [temperature, setTemperature] = useState('21');
-    const [sodium, setSodium] = useState('65');
-    const [magnesium, setMagnesium] = useState('8');
-
-    const sendUpdate = () => {
-        var data = {'temperature': parseFloat(temperature), 'sodium': parseFloat(sodium) / 1000.0, 
-        'magnesium': parseFloat(magnesium) / 1000.0};
-
-        NodeFetch('http://127.0.0.1:5000/send_input', 
-		{headers: {'Content-Type': 'application/json'},
-		method: 'POST',
-		body: JSON.stringify(data)
-        }).then(function (response) {
-            return response.text();
-        })
-    }
+    var temperature = useBetween(shareableTemperatureState);
+    var sodium = useBetween(shareableSodiumState);
+    var magnesium = useBetween(shareableMagnesiumState);
 
     const handleTemperature = (event, newValue) => {
         setTemperature(newValue);
-        sendUpdate();
     };
     const handleSodium = (event, newValue) => {
         setSodium(newValue);
-        sendUpdate();
     };
     const handleMagnesium = (event, newValue) => {
         setMagnesium(newValue);
-        sendUpdate();
     };
 
     return (

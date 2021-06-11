@@ -1,9 +1,8 @@
+import { shareableRunningState, shareableFinishedState, shareableGAProgressState, shareableOutputState } from './Optimizer.js'
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import NodeFetch from 'node-fetch';
+import { useBetween } from 'use-between';
 function CircularProgressWithLabel(props) {
     return (
         <Box position="relative" display="inline-flex">
@@ -27,63 +26,11 @@ CircularProgressWithLabel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-// Kill all running intervals
-var killId = setTimeout(function () {
-    for (var i = killId; i > 0; i--) {
-        clearInterval(i);
-    }
-}, 3000);
-
 const Output = () => {
-    const [running, setRunning] = useState(false);
-    const [finished, setFinished] = useState(false);
-    const [progress, updateProgress] = useState(0);
-    const [output, updateOutput] = useState({ finished: false});
-
-    const getProgress = () => {
-        NodeFetch('http://127.0.0.1:5000/get_progress',
-            {
-                headers: { 'Content-Type': 'application/json' },
-                method: 'POST',
-                body: ''
-            }).then(function (response) {
-                return response.json();
-            }).then(function (json) {
-                updateProgress(parseInt(json.progress));
-                setRunning(json.running);
-            })
-    }
-
-    const getOutput = () => {
-        NodeFetch('http://127.0.0.1:5000/get_output',
-            {
-                headers: { 'Content-Type': 'application/json' },
-                method: 'POST',
-                body: ''
-            }).then(function (response) {
-                return response.json();
-            }).then(function (json) {
-                updateOutput(json);
-                if (output.hasOwnProperty('sinkC')) {
-                    var output_copy = output;
-                    if (output_copy['sinkC'].length < 7 || output_copy['sinkC'] === 'None Required') {
-                        output_copy['sinkC'] = 'None Required';
-                        updateOutput(output_copy);
-                    }
-                }
-                setFinished(json.finished);
-            })
-    }
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            getProgress();
-            getOutput();
-        }, 1000);
-        return () => {
-          clearInterval(interval);
-        };
-      }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    var running = useBetween(shareableRunningState)
+    var finished = useBetween(shareableFinishedState)
+    var progress = useBetween(shareableGAProgressState)
+    var output = useBetween(shareableOutputState)
 
     if (running) {
         return (
