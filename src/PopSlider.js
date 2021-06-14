@@ -1,9 +1,10 @@
+import React from 'react';
 import Slider from '@material-ui/core/Slider';
 import { useState } from 'react';
 import { useBetween } from 'use-between';
 
-export const shareablePopSizeState = () => {
-    const [popSize, setPopSize] = useState();
+export const ShareablePopSizeState = () => {
+    const [popSize, setPopSize] = useState(Math.log2(128));
     return {
         popSize,
         setPopSize
@@ -12,15 +13,18 @@ export const shareablePopSizeState = () => {
 
 function valuetext(value) {
     return `${2 ** value}`;
-  }
+}
 
 const PopSlider = () => {
-    const sliderMin = 16;
+    const sliderMin = 128;
     const sliderMax = 4096;
     var sliderStart = 128;
     var sliderValue = sliderStart;
-    var popSize = useBetween(shareablePopSizeState);
-    setPopSize(Math.log2(sliderValue));
+    const { popSize, setPopSize } = useBetween(ShareablePopSizeState);
+
+    const handleChange = (event, newValue) => {
+        setPopSize(newValue);
+    };
 
     return (
         <div className="popslider">
@@ -30,7 +34,7 @@ const PopSlider = () => {
                 getAriaValueText={valuetext}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
-                onChange={i => setPopSize(i.target.value)}
+                onChange={handleChange}
                 step={1}
                 marks
                 scale={(x) => 2 ** x}

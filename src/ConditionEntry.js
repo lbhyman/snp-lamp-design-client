@@ -1,7 +1,8 @@
+import React from 'react';
 import { useState } from 'react';
 import { useBetween } from 'use-between';
 
-export const shareableTemperatureState = () => {
+export const ShareableTemperatureState = () => {
     const [temperature, setTemperature] = useState('21');
     return {
         temperature,
@@ -9,7 +10,7 @@ export const shareableTemperatureState = () => {
     }
 }
 
-export const shareableSodiumState = () => {
+export const ShareableSodiumState = () => {
     const [sodium, setSodium] = useState('65');
     return {
         sodium,
@@ -17,7 +18,7 @@ export const shareableSodiumState = () => {
     }
 }
 
-export const shareableMagnesiumState = () => {
+export const ShareableMagnesiumState = () => {
     const [magnesium, setMagnesium] = useState('8');
     return {
         magnesium,
@@ -27,9 +28,9 @@ export const shareableMagnesiumState = () => {
 
 const ConditionEntry = () => {
 
-    var temperature = useBetween(shareableTemperatureState);
-    var sodium = useBetween(shareableSodiumState);
-    var magnesium = useBetween(shareableMagnesiumState);
+    const { setTemperature } = useBetween(ShareableTemperatureState);
+    const { setSodium } = useBetween(ShareableSodiumState);
+    const { setMagnesium } = useBetween(ShareableMagnesiumState);
 
     const handleTemperature = (event, newValue) => {
         setTemperature(newValue);

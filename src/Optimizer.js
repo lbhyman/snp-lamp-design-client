@@ -1,68 +1,69 @@
-
 import { useState } from 'react';
 import { useBetween } from 'use-between';
+import { ShareablePopSizeState } from './PopSlider.js';
+import { ShareableProbeParams, ShareableStartSignal, ShareableStopSignal } from './Buttons.js';  
 import NodeFetch from 'node-fetch';
 
-export const shareableRunningState = () => {
+export const ShareableRunningState = () => {
     const [running, setRunning] = useState(false);
     return {
         running,
         setRunning
-    }
-}
+    };
+};
 
-export const shareableFinishedState = () => {
+export const ShareableFinishedState = () => {
     const [finished, setFinished] = useState(false);
     return {
         finished,
         setFinished
-    }
-}
+    };
+};
 
-export const shareableGAProgressState = () => {
+export const ShareableGAProgressState = () => {
     const [GAProgress, setGAProgress] = useState(0);
     return {
         GAProgress,
         setGAProgress
-    }    
-}
+    };    
+};
 
-export const shareableOutputState = () => {
+export const ShareableOutputState = () => {
     const [output, setOutput] = useState();
     return {
         output,
         setOutput
-    }    
-}
+    };    
+};
 
-class Optimizer {
+const Optimizer = () => {
 
-    constructor(probeParams, popSize) {
-        this.probeParams = probeParams;
-        this.popSize = popSize;
-        this.probePopulation = [];
-        this.finalProbe = null;
-        this.running = useBetween(shareableRunningState);
-        this.finished = useBetween(shareableFinishedState);
-        this.GAProgress = useBetween(shareableGAProgressState);
-        this.output = useBetween(shareableOutputState);
-        this.endPointAddress = 'http://127.0.0.1:5000'; // TODO: Use environment variable
-        this.reset();
-    }
+    const { probeParams } = useBetween(ShareableProbeParams);
+    const { startSignal, setStartSignal } = useBetween(ShareableStartSignal);
+    const { stopSignal, setStopSignal } = useBetween(ShareableStopSignal);
+    const { running, setRunning } = useBetween(ShareableRunningState);
+    const { setFinished } = useBetween(ShareableFinishedState);
+    const { GAProgress, setGAProgress } = useBetween(ShareableGAProgressState);
+    const { setOutput } = useBetween(ShareableOutputState);
+    const { popSize } = useBetween(ShareablePopSizeState);
+    const [probePopulation, setProbePopulation] = useState([])
+    const [finalProbe, setFinalProbe] = useState()
+    const endPointAddress = useState('http://127.0.0.1:5000'); // TODO: Use environment variable
 
-    reset = () => {
-        this.probePopulation = [];
+    const reset = () => {
+        setProbePopulation([]);
+        setFinalProbe(null);
         setRunning(false);
         setFinished(false);
         setGAProgress(0);
         setOutput(null);
     };
 
-    generateInitialGAPopulation = () => {
-        var endPoint = this.endPointAddress.concat('/generate_initial_population');
+    const generateInitialGAPopulation = () => {
+        var endPoint = endPointAddress.concat('/generate_initial_population');
         var params = {
-            popSize: this.popSize,
-            probeParams: this.probeParams
+            popSize: popSize,
+            probeParams: probeParams
         }
         NodeFetch(endPoint,
         {
@@ -72,40 +73,40 @@ class Optimizer {
         }).then(function (response) {
             return response.json();
         }).then(function (json) {
-            this.probePopulation = JSON.parse(json);
+            setProbePopulation(JSON.parse(json));
         })
     };
 
-    generateNextGAPopulation = () => {
-        var endPoint = this.endPointAddress.concat('/generate_next_population');
+    const generateNextGAPopulation = () => {
+        var endPoint = endPointAddress.concat('/generate_next_population');
         NodeFetch(endPoint,
         {
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
-            body: JSON.stringify(this.probePopulation)
+            body: JSON.stringify(probePopulation)
         }).then(function (response) {
             return response.json();
         }).then(function (json) {
-            this.probePopulation = JSON.parse(json);
+            setProbePopulation(JSON.parse(json));
         })
     };
 
-    generateNextHillClimbingSteps = () => {
-        var endPoint = this.endPointAddress.concat('/hill_climbing_options');
+    const generateNextHillClimbingSteps = () => {
+        var endPoint = endPointAddress.concat('/hill_climbing_options');
         NodeFetch(endPoint,
         {
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
-            body: JSON.stringify(this.probePopulation)
+            body: JSON.stringify(probePopulation)
         }).then(function (response) {
             return response.json();
         }).then(function (json) {
-            this.probePopulation = JSON.parse(json);
+            setProbePopulation(JSON.parse(json));
         })
     };
 
-    calculateProbeFitness = (probe) => {
-        var endPoint = this.endPointAddress.concat('/calculate_fitness');
+    const calculateProbeFitness = (probe) => {
+        var endPoint = endPointAddress.concat('/calculate_fitness');
         NodeFetch(endPoint,
         {
             headers: { 'Content-Type': 'application/json' },
@@ -116,24 +117,26 @@ class Optimizer {
         })
     };
 
-    calculatePopulationFitness = () => {
-        for (var i=0; i<this.probePopulation.length; i++) {
-            if(!this.running) {
-                this.reset();
+    const calculatePopulationFitness = () => {
+        var currPopulation = probePopulation;
+        for (var i=0; i<currPopulation.length; i++) {
+            if(!running) {
+                reset();
                 return null;
             }
-            var currProbe = this.probePopulation[i];
-            if (currProbe.beta[0] != 0) {
-                this.probePopulation[i] = this.calculateProbeFitness(currProbe);
+            var currProbe = currPopulation[i];
+            if (currProbe.beta[0] !== 0) {
+                currPopulation[i] = calculateProbeFitness(currProbe);
             }
-            setGAProgress(this.GAProgress + 1);
-        }    
+            setGAProgress(GAProgress + 1);
+        }   
+        setProbePopulation(currPopulation);
     };
 
-    getBestProbe = () => {
-        var bestProbe = this.probePopulation[0];
-        for (var i=0; i<this.probePopulation.length; i++) {
-            var currProbe = this.probePopulation[i];
+    const getBestProbe = () => {
+        var bestProbe = probePopulation[0];
+        for (var i=0; i<probePopulation.length; i++) {
+            var currProbe = probePopulation[i];
             if (currProbe.beta[0] > bestProbe.beta[0]) {
                 bestProbe = currProbe;
             }
@@ -141,41 +144,54 @@ class Optimizer {
         return bestProbe;
     };
 
-    runGA = () => {
-        this.generateInitialGAPopulation();
-        this.calculatePopulationFitness();
-        while (this.probePopulation.length > 1) {
-            this.generateNextGAPopulation();
-            this.calculatePopulationFitness();
+    const runGA = () => {
+        generateInitialGAPopulation();
+        calculatePopulationFitness();
+        while (probePopulation.length > 1) {
+            generateNextGAPopulation();
+            calculatePopulationFitness();
         }
-        this.calculatePopulationFitness();
+        calculatePopulationFitness();
     };
 
-    runHillClimbing = () => {
-        var bestProbe = this.getBestProbe();
-        this.generateNextHillClimbingSteps();
-        this.calculatePopulationFitness();
-        var newProbe = this.getBestProbe();
-        while (newProbe.beta[0] > bestProbe.beta[0] && this.probePopulation.length > 1) {
+    const runHillClimbing = () => {
+        var bestProbe = getBestProbe();
+        generateNextHillClimbingSteps();
+        calculatePopulationFitness();
+        var newProbe = getBestProbe();
+        while (newProbe.beta[0] > bestProbe.beta[0] && probePopulation.length > 1) {
             bestProbe = newProbe;
-            this.generateNextHillClimbingSteps();
-            this.calculatePopulationFitness();
-            var newProbe = this.getBestProbe();
+            generateNextHillClimbingSteps();
+            calculatePopulationFitness();
+            newProbe = getBestProbe();
         }
-        this.finalProbe = bestProbe;
+        setFinalProbe(bestProbe);
     };
 
-    run = () => {
+    const run = () => {
+        reset();
         setRunning(true);
         setFinished(false);
-        this.runGA();
-        this.runHillClimbing();
-        if (this.probePopulation.length > 0) {
+        runGA();
+        runHillClimbing();
+        if (probePopulation.length > 0) {
             setFinished(true);
-            setOutput(this.finalProbe);
+            setOutput(finalProbe);
         }
         setRunning(false);
     };
-}
+
+    if (startSignal) {
+        setStartSignal(false);
+        run();
+    }
+
+    if (stopSignal) {
+        setStopSignal(false);
+        reset();
+    }
+
+    return null;
+};
 
 export default Optimizer;

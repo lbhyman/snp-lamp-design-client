@@ -1,32 +1,32 @@
 import { useState } from 'react';
 import { useBetween } from 'use-between';
 
-export const shareableWTState = () => {
-    const [WT, setWT] = useState();
+export const ShareableWTState = () => {
+    const [WT, setWT] = useState('');
     return {
         WT,
         setWT
-    }
-}
+    };
+};
 
-export const shareableSNPState = () => {
-    const [SNP, setSNP] = useState();
+export const ShareableSNPState = () => {
+    const [SNP, setSNP] = useState('');
     return {
         SNP,
         setSNP
-    }
-}
+    };
+};
 
 const SequenceEntry = () => {
 
-    var WT = useBetween(shareableWTState);
-    var SNP = useBetween(shareableSNPState);
+    const { WT, setWT } = useBetween(ShareableWTState);
+    const { SNP, setSNP } = useBetween(ShareableSNPState);
 
     const handleWT= (event, newValue) => {
         setWT(newValue);
     };
     const handleSNP= (event, newValue) => {
-        setWT(newValue);
+        setSNP(newValue);
     };
 
     return (
