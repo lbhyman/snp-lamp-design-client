@@ -1,5 +1,5 @@
-import React from 'react';
-import { ShareableRunningState, ShareableFinishedState, ShareableOutputState } from './Optimizer.js';
+import { useEffect, useReducer } from 'react';
+import { ShareableRunningState, ShareableFinishedState, ShareableOutputState, ShareableWarningState } from './Optimizer.js';
 import { LoaderDots } from '@thumbtack/thumbprint-react';
 import { useBetween } from 'use-between';
 
@@ -7,12 +7,26 @@ const Output = () => {
     const { running } = useBetween(ShareableRunningState)
     const { finished } = useBetween(ShareableFinishedState)
     const { output } = useBetween(ShareableOutputState)
+    const { warning } = useBetween(ShareableWarningState)
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-    if (running) {
+    useEffect(() => {
+        forceUpdate();
+    }, [running, finished, output, warning]);
+
+    if (warning !== '') {
+        return (
+            <div className="warning">
+                <h3 className="warningheader">Unable to complete run</h3>
+                <p className="warningtext">{ warning }</p>
+            </div>
+        )
+    }
+    else if (running) {
         return (
             <div className="progress">
-                <h2>Optimization in Progress...</h2>
-                <LoaderDots size="medium" />
+                <h3 className="proglabel">Optimization in Progress</h3>
+                <LoaderDots size="medium" className="progindicator" />
             </div>
         );
     }

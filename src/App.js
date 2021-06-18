@@ -4,7 +4,6 @@ import ConditionEntry from './ConditionEntry';
 import PopSlider from './PopSlider';
 import Buttons from './Buttons';
 import Output from './Output';
-import Optimizer from './Optimizer';
 
 function App() {
     return (
@@ -15,7 +14,6 @@ function App() {
         <PopSlider />
         <Buttons />
         <Output />
-        <Optimizer />
       </div>
     );
 

@@ -1,16 +1,21 @@
 .App {
   margin: 0 auto;
-  width: 800px;
+  width: 850px;
 }
 
 h1 {
   text-align: center;
-  color: #555;
+  color: #666;
 }
 
 h2 {
   text-align: center;
-  color: #555;
+  color: #777;
+}
+
+h3 {
+  text-align: center;
+  color: #777;
 }
 
 input {
@@ -20,6 +25,7 @@ input {
 label {
   padding-left: 0px;
   padding-right: 20px;
+  color: #777;
 }
 
 .conditionentry .condition-form {
@@ -31,13 +37,13 @@ label {
 .conditionentry {
   float: left;
   clear: both;
-  width: 376px;
+  width: 399px;
 }
 
 .sequenceentry {
   float: left;
   clear: both;
-  width: 800px;
+  width: 850px;
   margin-bottom: 20px;
 }
 
@@ -48,7 +54,7 @@ label {
 }
 
 .sequenceentry .seq-form input {
-  width: 595px;
+  width: 645px;
 }
 
 .startstopbuttons {
@@ -78,25 +84,52 @@ label {
   clear: both;
 }
 
-
-.progress .progressbar {
-  margin-left: 100px;
+.progress {
+  float: right;
+  clear: both;
+  margin-right: 60px;
+  margin-top: -190px;
 }
 
 .progress .proglabel {
-  color: #555;
+  float: center;
+  clear: both;
+  padding: 20px;
+  color: #777;
+}
+
+.progress .progindicator {
+  float: left;
+  clear: both;
+  padding: 20px;
+}
+
+.warning {
+  float: right;
+  clear: both;
+  width: 400px;
+  text-align: center;
+  margin-top: -190px;
+}
+
+.warning .warningheader {
+  float: center;
+  clear: both;
+  color: #777;
 }
 
 .outputsequences {
   float: right;
   clear: both;
-  margin-top: -245px;
-  width: 390px;
+  margin-top: -230px;
+  margin-right: 10px;
+  width: 430px;
 }
 
 .outputsequences .sequencelabels {
   float: left;
   clear: both;
+  margin-left: 30px;
   width: 70px;
 }
 
@@ -104,5 +137,6 @@ label {
   float: right;
   clear: both;
   margin-top: -157px;
+  margin-left: 100px;
   width:300px;
 }

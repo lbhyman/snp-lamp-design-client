@@ -17,7 +17,7 @@ function valuetext(value) {
 
 const PopSlider = () => {
     const sliderMin = 128;
-    const sliderMax = 4096;
+    const sliderMax = 512;
     var sliderStart = 128;
     var sliderValue = sliderStart;
     const { popSize, setPopSize } = useBetween(ShareablePopSizeState);

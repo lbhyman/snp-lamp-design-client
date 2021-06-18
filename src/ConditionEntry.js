@@ -1,44 +1,40 @@
-import React from 'react';
-import { useState } from 'react';
+import { useState, useReducer } from 'react';
 import { useBetween } from 'use-between';
-
-export const ShareableTemperatureState = () => {
-    const [temperature, setTemperature] = useState('21');
-    return {
-        temperature,
-        setTemperature
-    }
-}
-
-export const ShareableSodiumState = () => {
-    const [sodium, setSodium] = useState('65');
-    return {
-        sodium,
-        setSodium
-    }
-}
-
-export const ShareableMagnesiumState = () => {
-    const [magnesium, setMagnesium] = useState('8');
-    return {
-        magnesium,
-        setMagnesium
-    }
-}
+import { ShareableProbeParams } from './Buttons.js';
 
 const ConditionEntry = () => {
 
-    const { setTemperature } = useBetween(ShareableTemperatureState);
-    const { setSodium } = useBetween(ShareableSodiumState);
-    const { setMagnesium } = useBetween(ShareableMagnesiumState);
+    const { probeParams, setProbeParams } = useBetween(ShareableProbeParams);
+    const [sodium, setSodium] = useState('');
+    const [temperature, setTemperature] = useState('');
+    const [magnesium, setMagnesium] = useState('');
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-    const handleTemperature = (event, newValue) => {
+    const handleTemperature = (newValue) => {
+        forceUpdate();
+        console.log(probeParams);
+        console.log(probeParams.params);
+        var copyParams = probeParams;
+        copyParams.params.temperature = newValue;
+        setProbeParams(copyParams);
         setTemperature(newValue);
     };
-    const handleSodium = (event, newValue) => {
+    const handleSodium = (newValue) => {
+        forceUpdate();
+        console.log(probeParams);
+        console.log(probeParams.params);
+        var copyParams = probeParams;
+        copyParams.params.sodium = newValue;
+        setProbeParams(copyParams);
         setSodium(newValue);
     };
-    const handleMagnesium = (event, newValue) => {
+    const handleMagnesium = (newValue) => {
+        forceUpdate();
+        console.log(probeParams);
+        console.log(probeParams.params);
+        var copyParams = probeParams;
+        copyParams.params.magnesium = newValue;
+        setProbeParams(copyParams);
         setMagnesium(newValue);
     };
 
@@ -46,15 +42,15 @@ const ConditionEntry = () => {
         <div className="conditionentry">
             <div class="condition-form" id="temperature-form">
                 <label for="temperature">Temperature (C)</label>
-                <input type="text" id="temperature" name="temperature" onChange={handleTemperature} />
+                <input type="text" value={temperature} id="temperature" name="temperature" onChange={i => handleTemperature(i.target.value)} />
             </div>
             <div class="condition-form" id="sodium-form">
                 <label for="sodium">[Sodium] (mM)</label>
-                <input type="text" id="sodium" name="sodium" onChange={handleSodium} />
+                <input type="text" value={sodium} id="sodium" name="sodium" onChange={j => handleSodium(j.target.value)} />
             </div>
             <div class="condition-form" id="magnesium-form">
                 <label for="magnesium">[Magnesium] (mM)</label>
-                <input type="text" id="magnesium" name="magnesium" onChange={handleMagnesium} />
+                <input type="text" value={magnesium} id="magnesium" name="magnesium" onChange={k => handleMagnesium(k.target.value)} />
             </div>
         </div>
     );

@@ -1,64 +1,106 @@
-import { ShareableRunningState } from './Optimizer.js';
-import { ShareableTemperatureState, ShareableSodiumState, ShareableMagnesiumState } from './ConditionEntry.js';
-import { ShareableWTState, ShareableSNPState } from './SequenceEntry.js';
+import { ShareableRunningState, ShareableOutputState, ShareableFinishedState, ShareableWarningState } from './Optimizer.js';
+import Optimizer from './Optimizer.js';
 import Button from '@material-ui/core/Button';
-import { useState } from 'react';
+import { useState, useReducer, useEffect } from 'react';
 import { useBetween } from 'use-between';
 
 export const ShareableProbeParams = () => {
-    const [probeParams, setProbeParams] = useState(null);
+    var params = {
+        WT:'',
+        SNP:'',
+        minlength:6,
+        mut_rate:0.5,
+        concentrations:{non_mut_target:1e-7, mut_target:1e-7, probeF:1e-7, probeQ:1e-7, sink:1e-7, sinkC:1e-7},
+        params:{temperature:'', sodium:'', magnesium:''},
+        beta:[0,0,0,0],
+        truncations:[]
+    };
+    const [probeParams, setProbeParams] = useState(params);
     return {
         probeParams,
         setProbeParams
     };
 };
 
-export const ShareableStartSignal = () => {
-    const [startSignal, setStartSignal] = useState(false);
-    return {
-        startSignal,
-        setStartSignal
-    };
-};
+const screenSequence = (sequence) => {
+    var seqArray = sequence.split('');
+    var allowedChars = 'ACTGactg'
+    for (let i = 0; i < seqArray.length; i++) {
+        if (!allowedChars.includes(seqArray[i])) {
+            return false;
+        }
+    }
+    return true;
+}
 
-export const ShareableStopSignal = () => {
-    const [stopSignal, setStopSignal] = useState(false);
-    return {
-        stopSignal,
-        setStopSignal
-    };
+// Check whether the user has provided valid input and generate a warning to show
+const screenInput = (probeParams) => {
+    var temperature = parseFloat(probeParams.params.temperature);
+    var sodium = parseFloat(probeParams.params.sodium);
+    var magnesium = parseFloat(probeParams.params.magnesium);
+    if (isNaN(temperature) || isNaN(sodium) || isNaN(magnesium)) {
+        return 'Temperature, [Sodium], and [Magnesium] must be numeric.';
+    }
+    else if (temperature > 100.0 || temperature < 0.0) {
+        return 'Temperature must be in the range 0-100C.';
+    }
+    else if (magnesium > 100.0) {
+        return 'Magnesium must be in the range 0-100mM';
+    }
+    else if (sodium > 500.0 || sodium < 10.0) {
+        return 'Sodium must be in the range 10-500mM';
+    }
+    else if (probeParams.WT.length < 10 || probeParams.WT.length > 100) {
+        console.log(probeParams);
+        return 'Sequence lengths must be in the range 10-100 bases.';
+    }
+    else if (probeParams.SNP.length < 10 || probeParams.SNP.length > 100) {
+        console.log(probeParams);
+        return 'Sequence lengths must be in the range 10-100 bases.';
+    }
+    else if (!screenSequence(probeParams.SNP) || !screenSequence(probeParams.WT)) {
+        return 'Sequences must be DNA.';
+    }
+    else if (probeParams.SNP.length !== probeParams.WT.length) {
+        return 'Sequences must be of equal length.';
+    }
+    else {
+        return '';
+    }
 };
 
 const Buttons = () => {
 
     const { running, setRunning } = useBetween(ShareableRunningState);
-    const { temperature } = useBetween(ShareableTemperatureState);
-    const { sodium } = useBetween(ShareableSodiumState);
-    const { magnesium } = useBetween(ShareableMagnesiumState);
-    const { WT_seq } = useBetween(ShareableWTState);
-    const { SNP_seq } = useBetween(ShareableSNPState);
-    const { setProbeParams } = useBetween(ShareableProbeParams);
-    const { setStartSignal } = useBetween(ShareableStartSignal);
-    const { setStopSignal } = useBetween(ShareableStopSignal);
+    const { setOutput } = useBetween(ShareableOutputState);
+    const { setFinished } = useBetween(ShareableFinishedState);
+    const { setWarning } = useBetween(ShareableWarningState);
+    const { probeParams } = useBetween(ShareableProbeParams);
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
-    const HandleStart = (value, newValue) => {
-        var params = {
-            WT:WT_seq,
-            SNP:SNP_seq,
-            minlength:6,
-            mut_rate:0.5,
-            concentrations:{non_mut_target:1e-7, mut_target:1e-7, probeF:1e-7, probeQ:1e-7, sink:1e-7, sinkC:1e-7},
-            params:{temperature:parseFloat(temperature), sodium:parseFloat(sodium)/1000.0, magnesium:parseFloat(magnesium)/1000.0},
-            beta:[0,0,0,0],
-            truncations:[]
-        };
-        setProbeParams(params);
-        setStartSignal(true);
+    useEffect(() => {
+        forceUpdate();
+    }, [running]);
+
+    const HandleStart = () => {
+        forceUpdate();
+        console.log(probeParams);
+        console.log(probeParams.params);
+        var warning = screenInput(probeParams);
+        setWarning(warning);
+        if (warning === '') {
+            setFinished(false);
+            setOutput(null);
+            setRunning(true);
+        }
     };
 
-    const HandleStop = (value, newValue) => {
+    const HandleStop = () => {
+        forceUpdate();
+        console.log(probeParams);
         setRunning(false);
-        setStopSignal(true);
+        setOutput(null);
+        setFinished(false);
     };
 
     return (
@@ -69,6 +111,7 @@ const Buttons = () => {
             <Button className='stopbutton' variant="contained" disabled={!running} color="default" onClick={HandleStop}>
                 Stop
             </Button>
+            {running && <Optimizer />}
         </div>
     )
 };
