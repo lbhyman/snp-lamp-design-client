@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { useBetween } from 'use-between';
 import { ShareablePopSizeState } from './PopSlider.js';
-import { ShareableProbeParams } from './Buttons.js';  
+import { ShareableProbeParams } from './Buttons.js';
+import useInterval from './useInterval.js';
 import NodeFetch from 'node-fetch';
 
 export const ShareableRunningState = () => {
@@ -55,7 +56,8 @@ async function runOptimizer(finalParams, popSize) {
         }
         // Other errors when connecting to AWS
         else if(response.status >= 400) {
-            throw new Error('Bad response from server');
+            return {running: 'true'};
+            //throw new Error('Bad response from server');
         }
         else {
             return response.json();
@@ -66,8 +68,8 @@ async function runOptimizer(finalParams, popSize) {
 async function getOutput(finalParams, popSize, attempt, maxAttempts) {
     var endPoint = process.env.REACT_APP_ENDPOINTADDRESS.concat('/get_output');
     finalParams.params.temperature = parseFloat(finalParams.params.temperature);
-    finalParams.params.sodium = parseFloat(finalParams.params.sodium)/1000.0;
-    finalParams.params.magnesium = parseFloat(finalParams.params.magnesium)/1000.0;
+    finalParams.params.sodium = parseFloat(finalParams.params.sodium);
+    finalParams.params.magnesium = parseFloat(finalParams.params.magnesium);
     return NodeFetch(endPoint,
     {
         headers: { 'Content-Type': 'application/json' },
@@ -92,19 +94,20 @@ const Optimizer = () => {
     const maxReattempts = 5;
 
     const { probeParams } = useBetween(ShareableProbeParams);
-    const { setRunning } = useBetween(ShareableRunningState);
+    const { running, setRunning } = useBetween(ShareableRunningState);
     const { setFinished } = useBetween(ShareableFinishedState);
     const { setOutput } = useBetween(ShareableOutputState);
     const { popSize } = useBetween(ShareablePopSizeState);
     const { setWarning } = useBetween(ShareableWarningState);
-    const [attempts, setAttempts] = useState(0);
+    const [attempts, ] = useState(0);
     const [finalParams, ] = useState(JSON.parse(JSON.stringify(probeParams)));
     const [finalPopSize, ] = useState(JSON.parse(JSON.stringify(popSize)));
+    const [startTime, setStartTime] = useState(0);
 
     // Run on mount
     useEffect(() => {
         let mounted = true;
-        var startTime = Date.now();
+        setStartTime(Date.now());
         // Start Optimizer
         runOptimizer(finalParams, finalPopSize)
         .then(output => {
@@ -115,47 +118,41 @@ const Optimizer = () => {
             }
         }).catch(err => {
             console.log(err);
-            setWarning('An error occurred while connecting to the optimization server. Please try again.');
-            setFinished(false);
-            setRunning(false);
         })
-        // Periodically check output
-        try {
-            var interval = setInterval(async () => {
-                var output = await getOutput(finalParams, finalPopSize, attempts, maxReattempts);
-                var elapsedTime = Date.now() - startTime;
-                if(output.hasOwnProperty('status')) {
-                    if(output.status === 'error') {
-                        if(mounted) {
-                            setAttempts(attempts + 1);
-                        }     
-                    }
-                }
-                else if(output.running === 'false') { 
-                    if(mounted) {
-                        setOutput(output);
-                        setFinished(true);
-                        setRunning(false);
-                    }
-                }
-                // Timeout after 5 minutes
-                else if(elapsedTime > 300000) {
-                    throw new Error('Optimization run timeout');
-                }
-            }, 5000);
-        }
-        catch(err) {
-            console.log(err);
-            setWarning('An error occurred while connecting to the optimization server. Please try again.');
-            setFinished(false);
-            setRunning(false);
-        }
+
         return () => {
             mounted = false;
-            clearInterval(interval);
         }
     // eslint-disable-next-line 
     }, []);
+
+    // Periodically check output
+    useInterval(() => {
+        var elapsedTime = Date.now() - startTime;
+        getOutput(finalParams, finalPopSize, attempts, maxReattempts)
+        .then(output => {
+            console.log(output);
+            if(output.running === 'false') { 
+                console.log('done');
+                setOutput(output);
+                setFinished(true);
+                setRunning(false);
+                console.log(running);
+            }
+            // Timeout after 5 minutes
+            else if(elapsedTime > 300000) {
+                throw new Error('Optimization run timeout');
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            if(elapsedTime > 300000) {
+                setWarning('Optimization run timed out. Please try again.');
+                setFinished(false);
+                setRunning(false);
+            }   
+        });
+    }, 5000);
 
     return null;
 };

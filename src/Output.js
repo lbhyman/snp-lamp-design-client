@@ -12,6 +12,9 @@ const Output = () => {
 
     useEffect(() => {
         forceUpdate();
+        console.log('Output.js');
+        console.log(running);
+        console.log(output);
     }, [running, finished, output, warning]);
 
     if (warning !== '') {
