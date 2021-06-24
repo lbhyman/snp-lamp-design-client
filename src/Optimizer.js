@@ -51,7 +51,7 @@ async function runOptimizer(finalParams, popSize) {
         console.log(response); 
         // AWS API Gateway will generally timeout before the optimizer is finished. This is normal behavior.
         if(response.status === 408 || response.status === 504) {
-            return {status: 'running'};
+            return {running: 'true'};
         }
         // Other errors when connecting to AWS
         else if(response.status >= 400) {
@@ -104,6 +104,7 @@ const Optimizer = () => {
     // Run on mount
     useEffect(() => {
         let mounted = true;
+        var startTime = Date.now();
         // Start Optimizer
         runOptimizer(finalParams, finalPopSize)
         .then(output => {
@@ -122,6 +123,7 @@ const Optimizer = () => {
         try {
             var interval = setInterval(async () => {
                 var output = await getOutput(finalParams, finalPopSize, attempts, maxReattempts);
+                var elapsedTime = Date.now() - startTime;
                 if(output.hasOwnProperty('status')) {
                     if(output.status === 'error') {
                         if(mounted) {
@@ -129,12 +131,16 @@ const Optimizer = () => {
                         }     
                     }
                 }
-                else { 
+                else if(output.running === 'false') { 
                     if(mounted) {
                         setOutput(output);
                         setFinished(true);
                         setRunning(false);
                     }
+                }
+                // Timeout after 5 minutes
+                else if(elapsedTime > 300000) {
+                    throw new Error('Optimization run timeout');
                 }
             }, 5000);
         }
