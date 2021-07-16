@@ -11,7 +11,6 @@ const SequenceEntry = () => {
 
     const handleWT = (newValue) => {
         forceUpdate();
-        console.log(probeParams);
         var currParams = probeParams;
         currParams.WT = newValue;
         setProbeParams(currParams);
@@ -19,23 +18,20 @@ const SequenceEntry = () => {
     };
     const handleSNP = (newValue) => {
         forceUpdate();
-        console.log(probeParams);
-        //console.log(newValue);
         var currParams = probeParams;
         currParams.SNP = newValue;
         setProbeParams(currParams);
         setSNP(newValue);
-        console.log(probeParams.SNP);
     };
 
     return (
         <div className="sequenceentry">
             <div class="seq-form" id="non-mut-form">
-                <label for="non-mut">WT Sequence</label>
+                <label for="non-mut">wildtype sequence</label>
                 <input type="text" value={WT} id="non-mut" name="non-mut" onChange={i => handleWT(i.target.value)} />
             </div>
             <div class="seq-form" id="mut-form">
-                <label for="mut">Mutated Sequence</label>
+                <label for="mut">mutated sequence</label>
                 <input type="text" value={SNP} id="mut" name="mut" onChange={j => handleSNP(j.target.value)} />
             </div>
         </div>

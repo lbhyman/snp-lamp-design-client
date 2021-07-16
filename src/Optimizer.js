@@ -49,7 +49,6 @@ async function runOptimizer(finalParams, popSize) {
         method: 'POST',
         body: JSON.stringify({'probeParams': finalParams, 'popSize': popSize})
     }).then(response => {
-        console.log(response); 
         // AWS API Gateway will generally timeout before the optimizer is finished. This is normal behavior.
         if(response.status === 408 || response.status === 504) {
             return {running: 'true'};
@@ -57,7 +56,6 @@ async function runOptimizer(finalParams, popSize) {
         // Other errors when connecting to AWS
         else if(response.status >= 400) {
             return {running: 'true'};
-            //throw new Error('Bad response from server');
         }
         else {
             return response.json();
@@ -76,7 +74,6 @@ async function getOutput(finalParams, popSize, attempt, maxAttempts) {
         method: 'POST',
         body: JSON.stringify({'probeParams': finalParams, 'popSize': popSize})
     }).then(response => {
-        console.log(response); 
         if(response.status >= 400 && attempt > maxAttempts) {
             throw new Error('Bad response from server');
         }
@@ -131,7 +128,6 @@ const Optimizer = () => {
         var elapsedTime = Date.now() - startTime;
         getOutput(finalParams, finalPopSize, attempts, maxReattempts)
         .then(output => {
-            console.log(output);
             if(output.running === 'false') { 
                 console.log('done');
                 setOutput(output);

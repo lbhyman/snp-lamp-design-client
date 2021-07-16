@@ -19,24 +19,23 @@ const Output = () => {
 
     if (warning !== '') {
         return (
-            <div className="warning">
-                <h3 className="warningheader">Unable to complete run</h3>
+            <div className="output">
+                <h3 className="warningheader">unable to optimize:</h3>
                 <p className="warningtext">{ warning }</p>
             </div>
         )
     }
     else if (running) {
         return (
-            <div className="progress">
-                <h3 className="proglabel">Optimization in Progress</h3>
+            <div className="output">
+                <h3 className="proglabel">optimizing</h3>
                 <LoaderDots size="medium" className="progindicator" />
             </div>
         );
     }
     else if (finished) {
         return (
-            <div className="outputsequences">
-                <h2>Output</h2>
+            <div className="sequenceoutput">
                 <div className="sequencelabels">
                     <p>ProbeF: </p>
                     <p>ProbeQ: </p>
@@ -55,7 +54,6 @@ const Output = () => {
     else {
         return (
             <div className="emptyoutput">
-                <h2>Output</h2>
             </div>
         );
     }

@@ -28,7 +28,7 @@ const PopSlider = () => {
 
     return (
         <div className="popslider">
-            <label for="population slider" className="sliderlabel">Starting Population: {2 ** popSize}</label>
+            <label for="population slider" className="sliderlabel">population: {2 ** popSize}</label>
             <Slider
                 defaultValue={Math.log2(sliderValue)}
                 getAriaValueText={valuetext}
