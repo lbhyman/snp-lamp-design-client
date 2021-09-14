@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useBetween } from 'use-between';
-import { ShareablePopSizeState } from './PopSlider.js';
 import { ShareableProbeParams } from './Buttons.js';
-import useInterval from './useInterval.js';
+//import useInterval from './useInterval.js';
 import NodeFetch from 'node-fetch';
 
 export const ShareableRunningState = () => {
@@ -38,7 +37,7 @@ export const ShareableWarningState = () => {
     };    
 };
 
-async function runOptimizer(finalParams, popSize) {
+async function runOptimizer(finalParams) {
     var endPoint = process.env.REACT_APP_ENDPOINTADDRESS.concat('/start_optimizer');
     finalParams.params.temperature = parseFloat(finalParams.params.temperature);
     finalParams.params.sodium = parseFloat(finalParams.params.sodium)/1000.0;
@@ -47,7 +46,7 @@ async function runOptimizer(finalParams, popSize) {
     {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
-        body: JSON.stringify({'probeParams': finalParams, 'popSize': popSize})
+        body: JSON.stringify({'probeParams': finalParams})
     }).then(response => {
         // AWS API Gateway will generally timeout before the optimizer is finished. This is normal behavior.
         if(response.status === 408 || response.status === 504) {
@@ -62,8 +61,8 @@ async function runOptimizer(finalParams, popSize) {
         }
     })
 }
-
-async function getOutput(finalParams, popSize, attempt, maxAttempts) {
+/*
+async function getOutput(finalParams, attempt, maxAttempts) {
     var endPoint = process.env.REACT_APP_ENDPOINTADDRESS.concat('/get_output');
     finalParams.params.temperature = parseFloat(finalParams.params.temperature);
     finalParams.params.sodium = parseFloat(finalParams.params.sodium);
@@ -72,7 +71,7 @@ async function getOutput(finalParams, popSize, attempt, maxAttempts) {
     {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
-        body: JSON.stringify({'probeParams': finalParams, 'popSize': popSize})
+        body: JSON.stringify({'probeParams': finalParams})
     }).then(response => {
         if(response.status >= 400 && attempt > maxAttempts) {
             throw new Error('Bad response from server');
@@ -84,21 +83,19 @@ async function getOutput(finalParams, popSize, attempt, maxAttempts) {
             return response.json();
         }
     })    
-}
+}*/
 
 const Optimizer = () => {
 
-    const maxReattempts = 5;
+    //const maxReattempts = 5;
 
     const { probeParams } = useBetween(ShareableProbeParams);
     const { running, setRunning } = useBetween(ShareableRunningState);
     const { setFinished } = useBetween(ShareableFinishedState);
     const { setOutput } = useBetween(ShareableOutputState);
-    const { popSize } = useBetween(ShareablePopSizeState);
     const { setWarning } = useBetween(ShareableWarningState);
-    const [attempts, ] = useState(0);
+    //const [attempts, ] = useState(0);
     const [finalParams, ] = useState(JSON.parse(JSON.stringify(probeParams)));
-    const [finalPopSize, ] = useState(JSON.parse(JSON.stringify(popSize)));
     const [startTime, setStartTime] = useState(0);
 
     // Run on mount
@@ -106,7 +103,7 @@ const Optimizer = () => {
         let mounted = true;
         setStartTime(Date.now());
         // Start Optimizer
-        runOptimizer(finalParams, finalPopSize)
+        runOptimizer(finalParams)
         .then(output => {
             if(mounted) {
                 setOutput(output);
@@ -115,6 +112,7 @@ const Optimizer = () => {
             }
         }).catch(err => {
             console.log(err);
+            setWarning('Optimization run timed out. Please try again.');
         })
 
         return () => {
@@ -124,9 +122,9 @@ const Optimizer = () => {
     }, []);
 
     // Periodically check output
-    useInterval(() => {
+    /*useInterval(() => {
         var elapsedTime = Date.now() - startTime;
-        getOutput(finalParams, finalPopSize, attempts, maxReattempts)
+        getOutput(finalParams, attempts, maxReattempts)
         .then(output => {
             if(output.running === 'false') { 
                 console.log('done');
@@ -148,7 +146,7 @@ const Optimizer = () => {
                 setRunning(false);
             }   
         });
-    }, 5000);
+    }, 5000);*/
 
     return null;
 };
