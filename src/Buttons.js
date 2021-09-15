@@ -1,4 +1,4 @@
-import { ShareableRunningState, ShareableOutputState, ShareableFinishedState, ShareableWarningState } from './Optimizer.js';
+import { ShareableRunningState, ShareableOutputState, ShareableFinishedState, ShareableWarningState } from './Output.js';
 import Optimizer from './Optimizer.js';
 import Button from '@material-ui/core/Button';
 import { ThemeProvider } from '@material-ui/core';
@@ -35,7 +35,7 @@ const screenSequence = (sequence) => {
     return true;
 }
 
-// Check whether the user has provided valid input and generate a warning to show
+// Check whether the user has provided valid input and generate a warning otherwise
 const screenInput = (probeParams) => {
     if (probeParams.WT.length < 20 || probeParams.WT.length > 60) {
         return 'Sequence lengths must be in the range 20-60 bases.';
@@ -48,6 +48,9 @@ const screenInput = (probeParams) => {
     }
     else if (probeParams.SNP.length !== probeParams.WT.length) {
         return 'Sequences must be of equal length.';
+    }
+    else if (probeParams.SNP === probeParams.WT) {
+        return 'Sequences must be different.';
     }
     else {
         return '';

@@ -1,7 +1,58 @@
-import { useEffect, useReducer } from 'react';
-import { ShareableRunningState, ShareableFinishedState, ShareableOutputState, ShareableWarningState } from './Optimizer.js';
+import { useState, useEffect, useReducer } from 'react';
 import { LoaderDots } from '@thumbtack/thumbprint-react';
 import { useBetween } from 'use-between';
+
+export const ShareableRunningState = () => {
+    const [running, setRunning] = useState(false);
+    return {
+        running,
+        setRunning
+    };
+};
+
+export const ShareableFinishedState = () => {
+    const [finished, setFinished] = useState(false);
+    return {
+        finished,
+        setFinished
+    };
+};
+
+export const ShareableOutputState = () => {
+    const [output, setOutput] = useState(null);
+    return {
+        output,
+        setOutput
+    };    
+};
+
+export const ShareableWarningState = () => {
+    const [warning, setWarning] = useState('');
+    return {
+        warning,
+        setWarning
+    };    
+};
+
+const centerPadOutput = (out, curr_seq, curr_label) => {
+    var curr_output = [out['probeF'], out['probeQ'], out['sink'], out['sinkC']];
+    var longest = Math.max(...(curr_output.map(el => el.length)));
+    console.log(longest);
+    var padLength = 70  - (9 + longest);
+    var padLeft = Math.round(padLength / 2);
+    var padRight = 70 - (curr_seq.length + 9 + padLeft);
+    var result = curr_label.concat(curr_seq);
+    console.log(padLeft);
+    console.log(padRight);
+    for (let i=0; i<padLeft; i++) {
+        result = ' '.concat(result);
+    }
+    for (let i=0; i<padRight; i++) {
+        result = result.concat(' ');
+    }
+    console.log(result);
+    return result;
+}
 
 const Output = () => {
     const { running } = useBetween(ShareableRunningState)
@@ -12,9 +63,6 @@ const Output = () => {
 
     useEffect(() => {
         forceUpdate();
-        console.log('Output.js');
-        console.log(running);
-        console.log(output);
     }, [running, finished, output, warning]);
 
     if (warning !== '') {
@@ -34,19 +82,22 @@ const Output = () => {
         );
     }
     else if (finished) {
+        if (output['sinkC'].length < 6) {
+            output['sinkC'] = 'None Required'
+        }
         return (
-            <div className="sequenceoutput">
-                <div className="sequencelabels">
-                    <p>ProbeF: </p>
-                    <p>ProbeQ: </p>
-                    <p>Sink: </p>
-                    <p>Sink*: </p>
-                </div>
-                <div className="outsequences">
-                    <p>{output['probeF']}</p>
-                    <p>{output['probeQ']}</p>
-                    <p>{output['sink']}</p>
-                    <p>{output['sinkC']}</p>
+            <div className="output">
+                <div className="seq_output" style={{ dislay: 'flex', alignItems: 'center', whiteSpace: 'pre-wrap', color: '#e0e0e0' }}>
+                    {`
+
+${centerPadOutput(output, output['probeF'], 'ProbeF:  ')}
+
+${centerPadOutput(output, output['probeQ'], 'ProbeQ:  ')}
+
+${centerPadOutput(output, output['sink'],   'Sink:    ')}
+
+${centerPadOutput(output, output['sinkC'],  'Sink*:   ')}
+                    `}
                 </div>
             </div>
         );
