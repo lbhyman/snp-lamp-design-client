@@ -5,7 +5,7 @@ import { ShareablePopSizeState } from './PopSlider.js';
 import { ShareableProbeParams } from './Buttons.js';  
 import NodeFetch from 'node-fetch';
 
-const endPointAddress = 'http://127.0.0.1:8000'; // TODO: Use environment variable
+//'http://127.0.0.1:8000';
 
 export const ShareableRunningState = () => {
     const [running, setRunning] = useState(false);
@@ -40,7 +40,7 @@ export const ShareableWarningState = () => {
 };
 
 async function runOptimizer(finalParams, popSize) {
-    var endPoint = endPointAddress.concat('/start_optimizer');
+    var endPoint = process.env.REACT_APP_ENDPOINTADDRESS.concat('/start_optimizer');
     finalParams.params.temperature = parseFloat(finalParams.params.temperature);
     finalParams.params.sodium = parseFloat(finalParams.params.sodium)/1000.0;
     finalParams.params.magnesium = parseFloat(finalParams.params.magnesium)/1000.0;
@@ -50,6 +50,7 @@ async function runOptimizer(finalParams, popSize) {
         method: 'POST',
         body: JSON.stringify({'probeParams': finalParams, 'popSize': popSize})
     }).then(response => {
+        console.log(response);
         if(response.status >= 400) {
             throw new Error('Bad response from server');
         }
