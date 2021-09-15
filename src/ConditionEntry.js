@@ -1,6 +1,7 @@
 import { useState, useReducer } from 'react';
 import { useBetween } from 'use-between';
 import { ShareableProbeParams } from './Buttons.js';
+import PopSlider from './PopSlider';
 
 const ConditionEntry = () => {
 
@@ -12,8 +13,6 @@ const ConditionEntry = () => {
 
     const handleTemperature = (newValue) => {
         forceUpdate();
-        console.log(probeParams);
-        console.log(probeParams.params);
         var copyParams = probeParams;
         copyParams.params.temperature = newValue;
         setProbeParams(copyParams);
@@ -21,8 +20,6 @@ const ConditionEntry = () => {
     };
     const handleSodium = (newValue) => {
         forceUpdate();
-        console.log(probeParams);
-        console.log(probeParams.params);
         var copyParams = probeParams;
         copyParams.params.sodium = newValue;
         setProbeParams(copyParams);
@@ -30,8 +27,6 @@ const ConditionEntry = () => {
     };
     const handleMagnesium = (newValue) => {
         forceUpdate();
-        console.log(probeParams);
-        console.log(probeParams.params);
         var copyParams = probeParams;
         copyParams.params.magnesium = newValue;
         setProbeParams(copyParams);
@@ -41,16 +36,19 @@ const ConditionEntry = () => {
     return (
         <div className="conditionentry">
             <div class="condition-form" id="temperature-form">
-                <label for="temperature">Temperature (C)</label>
+                <label for="temperature">temperature (C)</label>
                 <input type="text" value={temperature} id="temperature" name="temperature" onChange={i => handleTemperature(i.target.value)} />
             </div>
             <div class="condition-form" id="sodium-form">
-                <label for="sodium">[Sodium] (mM)</label>
+                <label for="sodium">sodium (mM)</label>
                 <input type="text" value={sodium} id="sodium" name="sodium" onChange={j => handleSodium(j.target.value)} />
             </div>
             <div class="condition-form" id="magnesium-form">
-                <label for="magnesium">[Magnesium] (mM)</label>
+                <label for="magnesium">magnesium (mM)</label>
                 <input type="text" value={magnesium} id="magnesium" name="magnesium" onChange={k => handleMagnesium(k.target.value)} />
+            </div>
+            <div class="condition-form" id="population-size">
+                <PopSlider />
             </div>
         </div>
     );

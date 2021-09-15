@@ -1,6 +1,8 @@
 import { ShareableRunningState, ShareableOutputState, ShareableFinishedState, ShareableWarningState } from './Optimizer.js';
 import Optimizer from './Optimizer.js';
 import Button from '@material-ui/core/Button';
+import { ThemeProvider } from '@material-ui/core';
+import { createTheme }  from '@material-ui/core/styles'
 import { useState, useReducer, useEffect } from 'react';
 import { useBetween } from 'use-between';
 
@@ -51,11 +53,9 @@ const screenInput = (probeParams) => {
         return 'Sodium must be in the range 10-500mM';
     }
     else if (probeParams.WT.length < 10 || probeParams.WT.length > 100) {
-        console.log(probeParams);
         return 'Sequence lengths must be in the range 10-100 bases.';
     }
     else if (probeParams.SNP.length < 10 || probeParams.SNP.length > 100) {
-        console.log(probeParams);
         return 'Sequence lengths must be in the range 10-100 bases.';
     }
     else if (!screenSequence(probeParams.SNP) || !screenSequence(probeParams.WT)) {
@@ -68,6 +68,14 @@ const screenInput = (probeParams) => {
         return '';
     }
 };
+
+const theme = createTheme({
+    palette: {
+        primary: {
+          main: '#9e9e9e'
+        }
+    }
+  });
 
 const Buttons = () => {
 
@@ -84,8 +92,6 @@ const Buttons = () => {
 
     const HandleStart = () => {
         forceUpdate();
-        console.log(probeParams);
-        console.log(probeParams.params);
         var warning = screenInput(probeParams);
         setWarning(warning);
         if (warning === '') {
@@ -97,7 +103,6 @@ const Buttons = () => {
 
     const HandleStop = () => {
         forceUpdate();
-        console.log(probeParams);
         setRunning(false);
         setOutput(null);
         setFinished(false);
@@ -105,12 +110,19 @@ const Buttons = () => {
 
     return (
         <div className="startstopbuttons">
-            <Button className='startbutton' variant="contained" disabled={running} color="primary" onClick={HandleStart}>
-                Optimize
-            </Button>
-            <Button className='stopbutton' variant="contained" disabled={!running} color="default" onClick={HandleStop}>
-                Stop
-            </Button>
+            <ThemeProvider theme={theme}>
+                <div className='Button'>
+                    <Button className='startbutton' variant="contained" disabled={running} color="primary" onClick={HandleStart}>
+                        Optimize
+                    </Button>
+                </div>
+                <div className='Button'>
+                    <Button className='stopbutton' variant="contained" disabled={!running} color="primary" onClick={HandleStop}>
+                        Stop
+                    </Button>
+                </div>
+            </ThemeProvider>
+            
             {running && <Optimizer />}
         </div>
     )
