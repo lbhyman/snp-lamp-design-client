@@ -37,26 +37,11 @@ const screenSequence = (sequence) => {
 
 // Check whether the user has provided valid input and generate a warning to show
 const screenInput = (probeParams) => {
-    var temperature = parseFloat(probeParams.params.temperature);
-    var sodium = parseFloat(probeParams.params.sodium);
-    var magnesium = parseFloat(probeParams.params.magnesium);
-    if (isNaN(temperature) || isNaN(sodium) || isNaN(magnesium)) {
-        return 'Temperature, [Sodium], and [Magnesium] must be numeric.';
+    if (probeParams.WT.length < 20 || probeParams.WT.length > 60) {
+        return 'Sequence lengths must be in the range 20-60 bases.';
     }
-    else if (temperature > 100.0 || temperature < 0.0) {
-        return 'Temperature must be in the range 0-100C.';
-    }
-    else if (magnesium > 100.0) {
-        return 'Magnesium must be in the range 0-100mM';
-    }
-    else if (sodium > 500.0 || sodium < 10.0) {
-        return 'Sodium must be in the range 10-500mM';
-    }
-    else if (probeParams.WT.length < 10 || probeParams.WT.length > 100) {
-        return 'Sequence lengths must be in the range 10-100 bases.';
-    }
-    else if (probeParams.SNP.length < 10 || probeParams.SNP.length > 100) {
-        return 'Sequence lengths must be in the range 10-100 bases.';
+    else if (probeParams.SNP.length < 20 || probeParams.SNP.length > 60) {
+        return 'Sequence lengths must be in the range 20-60 bases.';
     }
     else if (!screenSequence(probeParams.SNP) || !screenSequence(probeParams.WT)) {
         return 'Sequences must be DNA.';
