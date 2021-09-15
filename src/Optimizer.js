@@ -7,7 +7,6 @@ import NodeFetch from 'node-fetch';
 
 async function runOptimizer(finalParams) {
     var endPoint = process.env.REACT_APP_ENDPOINTADDRESS.concat('/start_optimizer');
-    console.log(endPoint);
     finalParams.params.temperature = parseFloat(finalParams.params.temperature);
     finalParams.params.sodium = parseFloat(finalParams.params.sodium)/1000.0;
     finalParams.params.magnesium = parseFloat(finalParams.params.magnesium)/1000.0;

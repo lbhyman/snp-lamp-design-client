@@ -82,9 +82,10 @@ const Output = () => {
         );
     }
     else if (finished) {
-        if (output['sinkC'].length < 6) {
+        /*if (output['sinkC'].length < 6) {
             output['sinkC'] = 'None Required'
-        }
+        }*/
+        console.log(output);
         return (
             <div className="output">
                 <div className="seq_output" style={{ dislay: 'flex', alignItems: 'center', whiteSpace: 'pre-wrap', color: '#e0e0e0' }}>
