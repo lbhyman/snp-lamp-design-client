@@ -5,9 +5,6 @@ import { ShareableProbeParams } from './Buttons.js';
 import { ShareableRunningState, ShareableFinishedState, ShareableOutputState, ShareableWarningState } from './Output.js';
 import NodeFetch from 'node-fetch';
 
-//'http://127.0.0.1:8000';
-
-
 async function runOptimizer(finalParams) {
     var endPoint = process.env.REACT_APP_ENDPOINTADDRESS.concat('/start_optimizer');
     console.log(endPoint);
