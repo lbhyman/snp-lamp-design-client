@@ -68,21 +68,22 @@ const theme = createTheme({
 const Buttons = () => {
 
     const { running, setRunning } = useBetween(ShareableRunningState);
-    const { setOutput } = useBetween(ShareableOutputState);
-    const { setFinished } = useBetween(ShareableFinishedState);
-    const { setWarning } = useBetween(ShareableWarningState);
+    const { output, setOutput } = useBetween(ShareableOutputState);
+    const { finished, setFinished } = useBetween(ShareableFinishedState);
+    const { warning, setWarning } = useBetween(ShareableWarningState);
     const { probeParams } = useBetween(ShareableProbeParams);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     useEffect(() => {
         forceUpdate();
-    }, [running]);
+    }, [running, probeParams, warning, output, finished]);
 
     const HandleStart = () => {
         forceUpdate();
-        var warning = screenInput(probeParams);
-        setWarning(warning);
-        if (warning === '') {
+        setWarning('');
+        var curr_warning = screenInput(probeParams);
+        setWarning(curr_warning);
+        if (curr_warning === '') {
             setFinished(false);
             setOutput(null);
             setRunning(true);
@@ -91,6 +92,7 @@ const Buttons = () => {
 
     const HandleStop = () => {
         forceUpdate();
+        setWarning('');
         setRunning(false);
         setOutput(null);
         setFinished(false);

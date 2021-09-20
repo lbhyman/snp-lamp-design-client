@@ -37,20 +37,16 @@ export const ShareableWarningState = () => {
 const centerPadOutput = (out, curr_seq, curr_label) => {
     var curr_output = [out['probeF'], out['probeQ'], out['sink'], out['sinkC']];
     var longest = Math.max(...(curr_output.map(el => el.length)));
-    console.log(longest);
     var padLength = 70  - (9 + longest);
     var padLeft = Math.round(padLength / 2);
     var padRight = 70 - (curr_seq.length + 9 + padLeft);
     var result = curr_label.concat(curr_seq);
-    console.log(padLeft);
-    console.log(padRight);
     for (let i=0; i<padLeft; i++) {
         result = ' '.concat(result);
     }
     for (let i=0; i<padRight; i++) {
         result = result.concat(' ');
     }
-    console.log(result);
     return result;
 }
 
@@ -82,9 +78,6 @@ const Output = () => {
         );
     }
     else if (finished) {
-        /*if (output['sinkC'].length < 6) {
-            output['sinkC'] = 'None Required'
-        }*/
         console.log(output);
         return (
             <div className="output">
