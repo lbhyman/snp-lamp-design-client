@@ -6,7 +6,7 @@ import { ShareableRunningState, ShareableFinishedState, ShareableOutputState, Sh
 import NodeFetch from 'node-fetch';
 
 async function runOptimizer(finalParams) {
-    var endPoint = 'http://127.0.0.1:8000/start_optimizer'; //process.env.REACT_APP_ENDPOINTADDRESS.concat('/start_optimizer'); //
+    var endPoint = process.env.REACT_APP_ENDPOINTADDRESS.concat('/start_optimizer'); //'http://127.0.0.1:8000/start_optimizer';
     finalParams.params.temperature = parseFloat(finalParams.params.temperature);
     finalParams.params.sodium = parseFloat(finalParams.params.sodium)/1000.0;
     finalParams.params.magnesium = parseFloat(finalParams.params.magnesium)/1000.0;
