@@ -4,7 +4,7 @@ import AssaySchematic from './assets/LAMP Assay.png';
 const Home = () => {
     return (
       <div className="About">
-          <h1>[ ABOUT SNP-LAMP DESIGN ]</h1>
+          <h1>[ HOME ]</h1>
           <p>
             Single-nucleotide polymorphisms (SNPs) are the most common source of genetic variation between individuals and have implications in human disease, 
             pathogen drug resistance, and agriculture. SNPs are typically detected using DNA sequencing, which requires laboratory sample preparation and 

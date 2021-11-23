@@ -12,8 +12,8 @@ const Header = () => {
                     <Typography variant="h6" component="h1">SNP-LAMP DESIGNER</Typography>
                     <div>
                         <Button {...{key: 'Home', color: 'inherit', to: '/', component: Link, className: 'headerButton'}}>Home</Button>
+                        <Button {...{key: 'About', color: 'inherit', to: '/about', component: Link, className: 'headerButton'}}>About</Button>
                         <Button {...{key: 'Tool', color: 'inherit', to: '/tool', component: Link, className: 'headerButton'}}>Start Designing</Button>
-                        {/* <Button {...{key: 'Tutorial', color: 'inherit', to: '/tutorial', component: Link, className: 'headerButton'}}>Tutorial</Button> */}
                     </div>
                 </Toolbar>
             </AppBar> 
