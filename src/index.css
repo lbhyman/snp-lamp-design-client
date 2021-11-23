@@ -171,12 +171,36 @@ label {
   align-items: center;
 }
 
+.About_sub {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 30vh;
+  width: 80vw;
+  overflow: hidden;
+  padding: 6vh;
+}
+
+.About_sub .Text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.About_sub .Text .p {
+  width: 60vw;
+}
+
 .Images {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  height: 30vh;
+  width: 30vw;
+  object-fit: contain;
   padding: 6vh;
+  overflow: hidden;
 }
 
 .Tutorial {
@@ -186,7 +210,7 @@ label {
 }
 
 p {
-  width: 50vw;
+  width: 40vw;
   text-align: justify;
   text-justify: inter-word;
   color: #e0e0e0;
