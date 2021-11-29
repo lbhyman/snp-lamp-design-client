@@ -1,7 +1,7 @@
 import Header from './Header';
 import Home from './Home';
 import About from './About';
-import Tutorial from './Tutorial';
+import Tool from './Tool';
 import { Route } from 'react-router-dom';
 
 function App() {
@@ -10,8 +10,8 @@ function App() {
         <Header />
         <div className='Content'>
           <Route exact path='/' component = {Home} />
+          <Route exact path='/tool' component = {Tool} />
           <Route exact path='/about' component = {About} />
-          <Route exact path='/tutorial' component = {Tutorial} />
         </div>  
       </div>
     );

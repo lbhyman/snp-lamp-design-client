@@ -12,14 +12,14 @@ const SequenceEntry = () => {
     const handleWT = (newValue) => {
         forceUpdate();
         var currParams = probeParams;
-        currParams.WT = newValue;
+        currParams.WT = newValue.toUpperCase();
         setProbeParams(currParams);
         setWT(newValue);
     };
     const handleSNP = (newValue) => {
         forceUpdate();
         var currParams = probeParams;
-        currParams.SNP = newValue;
+        currParams.SNP = newValue.toUpperCase();
         setProbeParams(currParams);
         setSNP(newValue);
     };

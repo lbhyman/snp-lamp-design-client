@@ -1,4 +1,4 @@
-import { ShareableRunningState, ShareableOutputState, ShareableFinishedState, ShareableWarningState } from './Optimizer.js';
+import { ShareableRunningState, ShareableOutputState, ShareableFinishedState, ShareableWarningState } from './Output.js';
 import Optimizer from './Optimizer.js';
 import Button from '@material-ui/core/Button';
 import { ThemeProvider } from '@material-ui/core';
@@ -35,7 +35,7 @@ const screenSequence = (sequence) => {
     return true;
 }
 
-// Check whether the user has provided valid input and generate a warning to show
+// Check whether the user has provided valid input and generate a warning otherwise
 const screenInput = (probeParams) => {
     if (probeParams.WT.length < 20 || probeParams.WT.length > 60) {
         return 'Sequence lengths must be in the range 20-60 bases.';
@@ -48,6 +48,9 @@ const screenInput = (probeParams) => {
     }
     else if (probeParams.SNP.length !== probeParams.WT.length) {
         return 'Sequences must be of equal length.';
+    }
+    else if (probeParams.SNP === probeParams.WT) {
+        return 'Sequences must be different.';
     }
     else {
         return '';
@@ -65,21 +68,22 @@ const theme = createTheme({
 const Buttons = () => {
 
     const { running, setRunning } = useBetween(ShareableRunningState);
-    const { setOutput } = useBetween(ShareableOutputState);
-    const { setFinished } = useBetween(ShareableFinishedState);
-    const { setWarning } = useBetween(ShareableWarningState);
+    const { output, setOutput } = useBetween(ShareableOutputState);
+    const { finished, setFinished } = useBetween(ShareableFinishedState);
+    const { warning, setWarning } = useBetween(ShareableWarningState);
     const { probeParams } = useBetween(ShareableProbeParams);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     useEffect(() => {
         forceUpdate();
-    }, [running]);
+    }, [running, probeParams, warning, output, finished]);
 
     const HandleStart = () => {
         forceUpdate();
-        var warning = screenInput(probeParams);
-        setWarning(warning);
-        if (warning === '') {
+        setWarning('');
+        var curr_warning = screenInput(probeParams);
+        setWarning(curr_warning);
+        if (curr_warning === '') {
             setFinished(false);
             setOutput(null);
             setRunning(true);
@@ -88,6 +92,7 @@ const Buttons = () => {
 
     const HandleStop = () => {
         forceUpdate();
+        setWarning('');
         setRunning(false);
         setOutput(null);
         setFinished(false);

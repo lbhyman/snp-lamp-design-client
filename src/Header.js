@@ -13,7 +13,7 @@ const Header = () => {
                     <div>
                         <Button {...{key: 'Home', color: 'inherit', to: '/', component: Link, className: 'headerButton'}}>Home</Button>
                         <Button {...{key: 'About', color: 'inherit', to: '/about', component: Link, className: 'headerButton'}}>About</Button>
-                        {/* <Button {...{key: 'Tutorial', color: 'inherit', to: '/tutorial', component: Link, className: 'headerButton'}}>Tutorial</Button> */}
+                        <Button {...{key: 'Tool', color: 'inherit', to: '/tool', component: Link, className: 'headerButton'}}>Start Designing</Button>
                     </div>
                 </Toolbar>
             </AppBar> 
