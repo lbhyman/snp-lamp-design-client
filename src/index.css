@@ -232,7 +232,7 @@ label {
 
 .About_sub .Text {
   height: 100%;
-  max-width: 60%;
+  max-width: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -240,11 +240,11 @@ label {
 }
 
 .About_sub .Text .p {
-  width: 50%;
+  width: 100%;
 }
 
 .Images {
-  width: 40%;
+  width: 50%;
   display: block;
 }
 
