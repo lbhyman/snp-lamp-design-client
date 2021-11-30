@@ -1,6 +1,7 @@
 import { useState, useEffect, useReducer } from 'react';
 import { LoaderDots } from '@thumbtack/thumbprint-react';
 import { useBetween } from 'use-between';
+import Slide from 'react-reveal/Fade';
 
 export const ShareableRunningState = () => {
     const [running, setRunning] = useState(false);
@@ -81,8 +82,9 @@ const Output = () => {
         console.log(output);
         return (
             <div className="output">
-                <div className="seq_output" style={{ dislay: 'flex', alignItems: 'center', whiteSpace: 'pre-wrap', color: '#e0e0e0' }}>
-                    {`
+                <Slide left>
+                    <div className="seq_output" style={{ dislay: 'flex', alignItems: 'center', whiteSpace: 'pre-wrap', color: '#e0e0e0' }}>
+                        {`
 
 ${centerPadOutput(output, output['probeF'], 'ProbeF:  ')}
 
@@ -91,8 +93,9 @@ ${centerPadOutput(output, output['probeQ'], 'ProbeQ:  ')}
 ${centerPadOutput(output, output['sink'],   'Sink:    ')}
 
 ${centerPadOutput(output, output['sinkC'],  'Sink*:   ')}
-                    `}
-                </div>
+                        `}
+                    </div>
+                </Slide>
             </div>
         );
     }

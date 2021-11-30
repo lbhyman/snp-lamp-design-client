@@ -1,4 +1,5 @@
 import React from 'react';
+import Slide from 'react-reveal/Fade';
 
 import BananaLeaf from './assets/Website Figs-01.png';
 import GibbsNoSink from './assets/Website Figs-02.png';
@@ -14,6 +15,8 @@ const About = () => {
       <div className="About">
           <h1>[ ABOUT ]</h1>
 
+
+          <Slide left>
           <div className="About_sub">
             <div className="Text">
               <h2>Point-of-care and field assays</h2>
@@ -29,7 +32,9 @@ const About = () => {
               <img src={BananaLeaf} alt="Banana leaf" />
             </div>
           </div>
+          </Slide>
 
+          <Slide left>
           <div className="About_sub">
             <div className="Images">
               <img src={GibbsNoSink} alt="Thermodynamics of probe binding without a sink complex" />
@@ -45,7 +50,9 @@ const About = () => {
               </p>
             </div>
           </div>
+          </Slide>
 
+          <Slide left>
           <div className="About_sub">
             <div className="Text">
               <h2>Competitive SNP probes</h2>
@@ -59,7 +66,9 @@ const About = () => {
               <img src={GibbsSink} alt="Thermodynamics of probe binding with a sink complex" />
             </div>
           </div>
+          </Slide>
 
+          <Slide left>
           <div className="About_sub">
             <div className="Images">
               <img src={CombinatorialProbes} alt="Combinatorial explosion of probe designs" />
@@ -74,7 +83,9 @@ const About = () => {
               </p>
             </div>
           </div>
+          </Slide>
 
+          <Slide left>
           <div className="About_sub">
             <div className="Text">
               <h2>The assay</h2>
@@ -88,7 +99,9 @@ const About = () => {
               <img src={AssaySchematic} alt="Schematic of the competitive SNP-LAMP assay" />
             </div>
           </div>
+          </Slide>
 
+          <Slide left>
           <div className="About_sub">
             <div className="Images">
               <img src={COVIDResults} alt="Assay results with two SARS-CoV-2 Spike protein variants" />
@@ -102,7 +115,10 @@ const About = () => {
             </div>
 
           </div>
+          </Slide>
 
+
+          <Slide left>
           <div className="About_sub">
             <div className="Text">
               <h2>What the output means</h2>
@@ -115,6 +131,7 @@ const About = () => {
               <img src={StrandDiagram} alt="Schematic of the competitive SNP-LAMP assay strands" />
             </div>
           </div>
+          </Slide>
 
       </div>
     );

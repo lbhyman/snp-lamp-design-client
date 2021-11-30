@@ -65,7 +65,23 @@ h3 {
 .Home {
   display: flex;
   flex-direction: column;
-  align-items: center
+  align-items: center;
+  width: 100%;
+  gap: 10vh;
+}
+
+.Tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 5vh;
+}
+
+.userInput {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .toolbar {
@@ -109,23 +125,33 @@ h3 {
 input {
   width: 11vw;
   color: #424242;
-  padding: 0.5vh;
+  color: #e0e0e0;
+  padding: 0.5vw;
   background-color: #cccccc;
+  background-color: rgba(255, 255, 255, 0.2);
+  font-size: 1rem;
+  text-align: center;
+  text-align: left;
 }
 
 .seq-form {
   padding: 0.8vh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
 }
 
 .seq-form input {
   display: flex;
   justify-content: center;
   width: 50vw;
+  border-radius: .5vw;
+  
 }
 
 label {
   color:#e0e0e0;
-  margin-left: 8px
+  margin-left: 8px;
 }
 
 .startstopbuttons {
@@ -147,7 +173,10 @@ label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center
+  justify-content: center;
+  padding: 2vh;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 1vw;
 }
 
 .output p {
@@ -190,6 +219,17 @@ label {
   border-radius: 1vw;
 }
 
+.Home_text {
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 4vh;
+  border-radius: 1vw;
+}
+
 .About_sub .Text {
   height: 100%;
   max-width: 60%;
@@ -221,9 +261,8 @@ img {
 }
 
 p {
-  width: 40vw;
+  width: 95%;
   text-align: justify;
   text-justify: inter-word;
   color: #e0e0e0;
-  margin-bottom: 4vh;
 }
