@@ -50,7 +50,11 @@ header h1 {
 
 h1 {
   color: rgb(54, 170, 216);
-  margin-bottom: 6vh;
+}
+
+h2 {
+  color: rgb(54, 170, 216);
+  margin-bottom: 4vh;
 }
 
 h3 {
@@ -77,6 +81,7 @@ h3 {
   flex-direction: column;
   width: 40wv;
   margin-bottom: 2vh;
+  margin-top: 6vh;
 
 }
 
@@ -169,44 +174,50 @@ label {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 10vh;
 }
 
 .About_sub {
+  background-color: rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: row;
-  align-items: center;
-  height: 30vh;
-  width: 80vw;
-  overflow: hidden;
-  padding: 6vh;
+  align-items: stretch;
+  justify-content: center;
+  width: 80%;
+  padding: 4vh;
+  gap: 2vw;
+  border-radius: 1vw;
 }
 
 .About_sub .Text {
+  height: 100%;
+  max-width: 60%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .About_sub .Text .p {
-  width: 60vw;
+  width: 50%;
 }
 
 .Images {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: 30vh;
-  width: 30vw;
-  object-fit: contain;
-  padding: 6vh;
-  overflow: hidden;
+  width: 40%;
+  display: block;
 }
 
 .Tutorial {
   display: flex;
   flex-direction: column;
   align-items: center
+}
+
+img {
+  width: 100%;
+  max-height: 100%;
+  
 }
 
 p {
