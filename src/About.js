@@ -124,7 +124,7 @@ const About = () => {
               <h2>What the output means</h2>
               <p>
                 This tool will output four DNA sequences that comprise a competitive probe set. The ProbeF and ProbeQ strands represent the SNP-specific probe set containing the fluorophore 
-                and quencher, respectively. The Sink and Sink* strands are specific to the WT strand. All strand only require minor modification before they can be ordered.
+                and quencher, respectively. The Sink and Sink* strands are specific to the WT strand. All strands only require minor modification before they can be ordered.
               </p>
             </div>
             <div className="Images">
